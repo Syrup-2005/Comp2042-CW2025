@@ -20,6 +20,7 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.util.Duration;
 
+import javax.swing.*;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -39,6 +40,9 @@ public class GuiController implements Initializable {
     @FXML
     private GameOverPanel gameOverPanel;
 
+    @FXML
+    private PausePanel pausePanel;
+
     private Rectangle[][] displayMatrix;
 
     private InputEventListener eventListener;
@@ -47,49 +51,112 @@ public class GuiController implements Initializable {
 
     private Timeline timeLine;
 
-    private final BooleanProperty isPause = new SimpleBooleanProperty();
+    /**  private final BooleanProperty isPause = new SimpleBooleanProperty(false);
+     *
+     * Changed the default boolean to false for isPause
+     */
+
+    // Set false to default
+    private final BooleanProperty isPause = new SimpleBooleanProperty(false);
 
     private final BooleanProperty isGameOver = new SimpleBooleanProperty();
 
+    // Initialization
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         Font.loadFont(getClass().getClassLoader().getResource("digital.ttf").toExternalForm(), 38);
         gamePanel.setFocusTraversable(true);
         gamePanel.requestFocus();
+
+        /** To initialize the pausePanel after adding it to GameLayout.fxml
+         *
+         * pausePanel is set to (false) by default when initialized
+         * pausePanel.setPrefSize(gamePanel.getWidth(), gamePanel.getHeight());, this ensures the overlay covers the enitre game board.
+         */
+
+        pausePanel.setVisible(false);
+        pausePanel.setPrefSize(gamePanel.getWidth(), gamePanel.getHeight());
+
+        /** Keyboard Mapping
+         *
+         *  1. If ESC key or P key is pressed, pauseGame() method will be called
+         *
+         *  2. If X key is pressed, input is sent to GameController.java and the method onXEvent() is called for the logic of clockwise rotation.
+         *
+         *  3. If z key is pressed, input is sent to GameController.java and the method onzEvent() is called for the logic of counter-clockwise rotation.
+         *
+         *  4. If SPACE key is pressed, input is sent to GameController.java and the method onSpaceEvent() is called for the logic of snapping the current piece to bottom of the well.
+         *
+         */
+
+        // Sets up keyboard mapping
         gamePanel.setOnKeyPressed(new EventHandler<KeyEvent>() {
             @Override
             public void handle(KeyEvent keyEvent) {
+                // Set ESC for pausing the game
+                if (keyEvent.getCode() == KeyCode.ESCAPE || keyEvent.getCode() == KeyCode.P) {
+                    // Toggle pause and unpause
+                    pauseGame();
+                    keyEvent.consume();
+                }
+                // Checks if game is paused or GameOver before processing inputs
                 if (isPause.getValue() == Boolean.FALSE && isGameOver.getValue() == Boolean.FALSE) {
+                    // Inputs mapped to arrow keys and WASD
                     if (keyEvent.getCode() == KeyCode.LEFT || keyEvent.getCode() == KeyCode.A) {
+                        // Move piece to left
                         refreshBrick(eventListener.onLeftEvent(new MoveEvent(EventType.LEFT, EventSource.USER)));
                         keyEvent.consume();
                     }
                     if (keyEvent.getCode() == KeyCode.RIGHT || keyEvent.getCode() == KeyCode.D) {
+                        // Move piece to right
                         refreshBrick(eventListener.onRightEvent(new MoveEvent(EventType.RIGHT, EventSource.USER)));
                         keyEvent.consume();
                     }
                     if (keyEvent.getCode() == KeyCode.UP || keyEvent.getCode() == KeyCode.W) {
+                        // Rotate piece
                         refreshBrick(eventListener.onRotateEvent(new MoveEvent(EventType.ROTATE, EventSource.USER)));
                         keyEvent.consume();
                     }
                     if (keyEvent.getCode() == KeyCode.DOWN || keyEvent.getCode() == KeyCode.S) {
+                        // Move piece down
                         moveDown(new MoveEvent(EventType.DOWN, EventSource.USER));
                         keyEvent.consume();
                     }
+                    // Adding more options to rotate pieces
+                    // Set Z Key for counter-clockwise rotation
+                    if (keyEvent.getCode() == KeyCode.Z) {
+                        refreshBrick(eventListener.onZEvent(new MoveEvent(EventType.ROTATECC, EventSource.USER)));
+                        keyEvent.consume();
+                    }
+                    // Set X Key for clockwise rotation
+                    if (keyEvent.getCode() == KeyCode.X) {
+                        refreshBrick(eventListener.onXEvent(new MoveEvent(EventType.ROTATEC, EventSource.USER)));
+                        keyEvent.consume();
+                    }
+                    // Set Space key for downwards snap to bottom of well
+                    if (keyEvent.getCode() == KeyCode.SPACE) {
+                        refreshBrick(eventListener.onSpaceEvent(new MoveEvent(EventType.SNAPDOWN, EventSource.USER)));
+                        keyEvent.consume();
+                    }
                 }
+                // N key is mapped to start new game
                 if (keyEvent.getCode() == KeyCode.N) {
                     newGame(null);
                 }
+
             }
         });
         gameOverPanel.setVisible(false);
+        pausePanel.setVisible(false);
 
+        // Not assigned to any node
         final Reflection reflection = new Reflection();
         reflection.setFraction(0.8);
         reflection.setTopOpacity(0.9);
         reflection.setTopOffset(-12);
     }
 
+    // Creates bricks/pieces in the board
     public void initGameView(int[][] boardMatrix, ViewData brick) {
         displayMatrix = new Rectangle[boardMatrix.length][boardMatrix[0].length];
         for (int i = 2; i < boardMatrix.length; i++) {
@@ -113,15 +180,34 @@ public class GuiController implements Initializable {
         brickPanel.setLayoutX(gamePanel.getLayoutX() + brick.getxPosition() * brickPanel.getVgap() + brick.getxPosition() * BRICK_SIZE);
         brickPanel.setLayoutY(-42 + gamePanel.getLayoutY() + brick.getyPosition() * brickPanel.getHgap() + brick.getyPosition() * BRICK_SIZE);
 
+        /** If statement for isPause
+         *
+         * this if statement checks if the game is paused,
+         * if the game is not paused the timeline proceeds as normal, making the game run as usual
+         *
+         * if the game is paused, the timeline will be frozen and the pieces will not fall and be suspended in whatever current position they were in
+         *
+         */
 
+        // Timeline which defines game speed
+        // Sets how fast the pieces fall
         timeLine = new Timeline(new KeyFrame(
-                Duration.millis(400),
-                ae -> moveDown(new MoveEvent(EventType.DOWN, EventSource.THREAD))
+                Duration.millis(400), // set to 400ms as default
+                // When S key or down arrow key is pressed
+                // Move piece down
+                ae -> {
+                    if (!isPause.get()) {
+                        // Move piece if not paused
+                        moveDown(new MoveEvent(EventType.DOWN, EventSource.THREAD));
+                    }
+                }
         ));
         timeLine.setCycleCount(Timeline.INDEFINITE);
         timeLine.play();
     }
 
+    // Maps an integer value to a color
+    // Essential for rendering piece/brick color correctly
     private Paint getFillColor(int i) {
         Paint returnPaint;
         switch (i) {
@@ -156,7 +242,7 @@ public class GuiController implements Initializable {
         return returnPaint;
     }
 
-
+    // Handles visual updates
     private void refreshBrick(ViewData brick) {
         if (isPause.getValue() == Boolean.FALSE) {
             brickPanel.setLayoutX(gamePanel.getLayoutX() + brick.getxPosition() * brickPanel.getVgap() + brick.getxPosition() * BRICK_SIZE);
@@ -169,6 +255,7 @@ public class GuiController implements Initializable {
         }
     }
 
+    // Updates the colors of the fixed bricks when lines are cleared
     public void refreshGameBackground(int[][] board) {
         for (int i = 2; i < board.length; i++) {
             for (int j = 0; j < board[i].length; j++) {
@@ -177,20 +264,26 @@ public class GuiController implements Initializable {
         }
     }
 
+    // Determines brick/piece color
     private void setRectangleData(int color, Rectangle rectangle) {
         rectangle.setFill(getFillColor(color));
         rectangle.setArcHeight(9);
         rectangle.setArcWidth(9);
     }
 
+    // Node to move piece down
     private void moveDown(MoveEvent event) {
         if (isPause.getValue() == Boolean.FALSE) {
             DownData downData = eventListener.onDownEvent(event);
+            // If any lines were cleared display score notification
             if (downData.getClearRow() != null && downData.getClearRow().getLinesRemoved() > 0) {
                 NotificationPanel notificationPanel = new NotificationPanel("+" + downData.getClearRow().getScoreBonus());
                 groupNotification.getChildren().add(notificationPanel);
                 notificationPanel.showScore(groupNotification.getChildren());
             }
+
+            // Make the dropping piece part of the well, so it is available for collision detection
+
             refreshBrick(downData.getViewData());
         }
         gamePanel.requestFocus();
@@ -203,12 +296,14 @@ public class GuiController implements Initializable {
     public void bindScore(IntegerProperty integerProperty) {
     }
 
+    // Game Over Screen
     public void gameOver() {
         timeLine.stop();
         gameOverPanel.setVisible(true);
         isGameOver.setValue(Boolean.TRUE);
     }
 
+    // Start new game
     public void newGame(ActionEvent actionEvent) {
         timeLine.stop();
         gameOverPanel.setVisible(false);
@@ -219,7 +314,23 @@ public class GuiController implements Initializable {
         isGameOver.setValue(Boolean.FALSE);
     }
 
-    public void pauseGame(ActionEvent actionEvent) {
+    /** pauseGame() method was refactored
+     *
+     * isPaused.get() returns the current pause status
+     * !isPaused flips the boolean value, so if the game is running it will be paused, if the game is paused it will be resumed
+     * depending on the pause status of the game, the pausePanel overlay will be revealed or hidden accordingly
+     * gamePanel.requestFocus(); allows keyboard inputs to still be taken while paused or unpaused
+     *
+     */
+
+    // Pausing Game
+    public void pauseGame() {
+        boolean paused = !isPause.get();
+        isPause.set(paused);
+
+        pausePanel.setVisible(paused);
+
         gamePanel.requestFocus();
     }
+
 }

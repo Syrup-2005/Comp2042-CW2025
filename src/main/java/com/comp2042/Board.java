@@ -4,11 +4,20 @@ public interface Board {
 
     boolean moveBrickDown();
 
+    // Snap down current falling brick to bottom of well
+    boolean snapBrickDown();
+
     boolean moveBrickLeft();
 
     boolean moveBrickRight();
 
     boolean rotateLeftBrick();
+
+    // Counter-clockwise rotation of bricks
+    boolean rotateBrickCC();
+
+    // Clockwise rotation of bricks
+    boolean rotateBrickC();
 
     boolean createNewBrick();
 
@@ -23,4 +32,5 @@ public interface Board {
     Score getScore();
 
     void newGame();
+
 }

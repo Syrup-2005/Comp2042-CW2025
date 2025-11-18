@@ -39,6 +39,31 @@ public class SimpleBoard implements Board {
         }
     }
 
+    /** snapBrickDown() method
+     *
+     * when the pieces are falling in the well the offset is calculated repeatedly,
+     * It will check the positioning in the well to see if any collisions occur either with the ground or previously locked bricks in the well,
+     * If there is no collisions it will move down one row, this continues until a collision occurs
+     * When collision occurs, the real game offset will become its final positioning, allowing it to be locked in the game matrix
+     * It will return the value true for snapping the brick into the well and return it to the method used in GameController.java
+     *
+     * @return
+     */
+
+    // Snap piece down to bottom of well
+    @Override
+    public boolean snapBrickDown() {
+        Point p = new Point(currentOffset);
+        while (!MatrixOperations.intersect(currentGameMatrix, brickRotator.getCurrentShape(), p.x, p.y + 1)) {
+            p.y += 1;
+        }
+
+        // Lock piece at bottom of well
+        currentOffset = p;
+
+        return true;
+    }
+
 
     @Override
     public boolean moveBrickLeft() {
@@ -68,6 +93,7 @@ public class SimpleBoard implements Board {
         }
     }
 
+    // Rotation of bricks
     @Override
     public boolean rotateLeftBrick() {
         int[][] currentMatrix = MatrixOperations.copy(currentGameMatrix);
@@ -81,11 +107,62 @@ public class SimpleBoard implements Board {
         }
     }
 
+    /** rotateBrickCC() method for Counter-Clockwise rotation
+     *
+     * Essentially, the method functions the same as rotateLeftBrick() but it uses the counter-clockwise rotation of the brick instead of rotating clockwise
+     * It checks for collision, if collision happens it will return the value false for this method
+     * if there is no collision it will get the next shape and position and return the correct counter-clockwise rotation
+     * it then returns the value true for boolean
+     * This method is then called in GameController.java
+     *
+     * @return
+     */
+
+    // Counter-clockwise rotation of bricks
+    @Override
+    public boolean rotateBrickCC() {
+        int[][] currentMatrix = MatrixOperations.copy(currentGameMatrix);
+        NextShapeInfo nextShape = brickRotator.getNextCounterClockwiseShape();
+        boolean conflict = MatrixOperations.intersect(currentMatrix, nextShape.getShape(), (int) currentOffset.getX(), (int) currentOffset.getY());
+        if (conflict) {
+            return false;
+        } else {
+            brickRotator.setCurrentShape(nextShape.getPosition());
+            return true;
+        }
+    }
+
+    /** rotateBrickCC() method for Clockwise rotation
+     *
+     * Essentially, the method functions the same as rotateLeftBrick() but it is called when X key is pressed
+     * It checks for collision, if collision happens it will return the value false for this method
+     * if there is no collision it will get the next shape and position and return the correct clockwise rotation
+     * it then returns the value true for boolean
+     * This method is then called in GameController.java
+     *
+     * @return
+     */
+
+    // Clockwise rotation of bricks
+    @Override
+    public boolean rotateBrickC() {
+        int[][] currentMatrix = MatrixOperations.copy(currentGameMatrix);
+        NextShapeInfo nextShape = brickRotator.getNextClockwiseShape();
+        boolean conflict = MatrixOperations.intersect(currentMatrix, nextShape.getShape(), (int) currentOffset.getX(), (int) currentOffset.getY());
+        if (conflict) {
+            return false;
+        } else {
+            brickRotator.setCurrentShape(nextShape.getPosition());
+            return true;
+        }
+    }
+
+    // Spawns the pieces
     @Override
     public boolean createNewBrick() {
         Brick currentBrick = brickGenerator.getBrick();
         brickRotator.setBrick(currentBrick);
-        currentOffset = new Point(4, 10);
+        currentOffset = new Point(4, 0); // Changed y value to 0 to make the pieces spawn at the top of the screen
         return MatrixOperations.intersect(currentGameMatrix, brickRotator.getCurrentShape(), (int) currentOffset.getX(), (int) currentOffset.getY());
     }
 

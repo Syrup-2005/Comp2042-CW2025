@@ -5,6 +5,7 @@ public final class NextShapeInfo {
     private final int[][] shape;
     private final int position;
 
+    // Information about next shape/brick
     public NextShapeInfo(final int[][] shape, final int position) {
         this.shape = shape;
         this.position = position;
