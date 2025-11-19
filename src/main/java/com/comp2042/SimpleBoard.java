@@ -115,7 +115,7 @@ public class SimpleBoard implements Board {
      * it then returns the value true for boolean
      * This method is then called in GameController.java
      *
-     * @return
+     * @return the updated instance of the position of the counter-clockwise rotated logic brick back to onzEvent() method
      */
 
     // Counter-clockwise rotation of bricks
@@ -140,7 +140,7 @@ public class SimpleBoard implements Board {
      * it then returns the value true for boolean
      * This method is then called in GameController.java
      *
-     * @return
+     * @return the updated instance of the position of the clockwise rotated logic brick back to onXEvent() method
      */
 
     // Clockwise rotation of bricks
@@ -181,11 +181,34 @@ public class SimpleBoard implements Board {
         currentGameMatrix = MatrixOperations.merge(currentGameMatrix, brickRotator.getCurrentShape(), (int) currentOffset.getX(), (int) currentOffset.getY());
     }
 
+    /** updated clearRows();
+     *
+     * Clears any fully completed horizontal rows from the current game matrix
+     * it will calculate the amount of lines removed
+     * it will also calculate the updated game matrix after line removal
+     *
+     * After taking in these 2 factors it will calculate a score bonus based on the number of cleared lines
+     *
+     * @return the updated instance of cleared rows and the score bonus earned
+     */
+
     @Override
     public ClearRow clearRows() {
         ClearRow clearRow = MatrixOperations.checkRemoving(currentGameMatrix);
-        currentGameMatrix = clearRow.getNewMatrix();
-        return clearRow;
+        int lines = clearRow.getLinesRemoved();
+        int[][] newMatrix = clearRow.getNewMatrix();
+        currentGameMatrix = newMatrix;
+
+        // Points awarded for multiple line clears
+        int bonus = switch (lines) {
+            case 1 -> 100;
+            case 2 -> 300;
+            case 3 -> 500;
+            case 4 -> 800;
+            default -> 0;
+        };
+
+        return new ClearRow(lines,newMatrix, bonus);
 
     }
 

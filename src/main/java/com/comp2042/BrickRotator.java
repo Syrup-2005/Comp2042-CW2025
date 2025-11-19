@@ -14,6 +14,16 @@ public class BrickRotator {
         return new NextShapeInfo(brick.getShapeMatrix().get(nextShape), nextShape);
     }
 
+    /** getNextCounterClockwiseShape()
+     *
+     * It will first get the current shape position,
+     * then using holder as a placeholder to get the size of shapeMatrix
+     * It will then get the previous position of the shape of the logic brick
+     * lastly it will return the counter-clockwise rotation of the brick
+     *
+     * @return the updated instance of the counter-clockwise rotated brick piece
+     */
+
     // Add logic for Counter-clockwise and Clockwise Rotation
     // Counter-Clockwise
     public NextShapeInfo getNextCounterClockwiseShape() {
@@ -22,6 +32,16 @@ public class BrickRotator {
         int NextPosition = (currentPosition - 1 + holder) % holder;
         return new NextShapeInfo(brick.getShapeMatrix().get(NextPosition), NextPosition);
     }
+
+    /** getNextClockwiseShape()
+     *
+     * It will first get the current shape position,
+     * then using holder as a placeholder to get the size of shapeMatrix
+     * It will then get the next position of the shape of the logic brick
+     * lastly it will return the clockwise rotation of the brick
+     *
+     * @return the updated instance of the clockwise rotated brick piece
+     */
 
     // Clockwise
     public NextShapeInfo getNextClockwiseShape() {

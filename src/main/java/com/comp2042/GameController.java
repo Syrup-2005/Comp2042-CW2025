@@ -133,4 +133,9 @@ public class GameController implements InputEventListener {
         board.newGame();
         viewGuiController.refreshGameBackground(board.getBoardMatrix());
     }
+
+    public void updateScoreBoard() {
+        Score score = board.getScore();
+
+    }
 }

@@ -20,7 +20,6 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.util.Duration;
 
-import javax.swing.*;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -42,6 +41,9 @@ public class GuiController implements Initializable {
 
     @FXML
     private PausePanel pausePanel;
+
+    @FXML
+    private ScoreBoard ScoreBoardView;
 
     private Rectangle[][] displayMatrix;
 
@@ -71,11 +73,13 @@ public class GuiController implements Initializable {
         /** To initialize the pausePanel after adding it to GameLayout.fxml
          *
          * pausePanel is set to (false) by default when initialized
-         * pausePanel.setPrefSize(gamePanel.getWidth(), gamePanel.getHeight());, this ensures the overlay covers the enitre game board.
+         * pausePanel.setPrefSize(gamePanel.getWidth(), gamePanel.getHeight());, this ensures the overlay covers the entire game board.
          */
 
         pausePanel.setVisible(false);
         pausePanel.setPrefSize(gamePanel.getWidth(), gamePanel.getHeight());
+
+        ScoreBoardView.setVisible(true);
 
         /** Keyboard Mapping
          *
@@ -148,6 +152,7 @@ public class GuiController implements Initializable {
         });
         gameOverPanel.setVisible(false);
         pausePanel.setVisible(false);
+        ScoreBoardView.setVisible(true);
 
         // Not assigned to any node
         final Reflection reflection = new Reflection();
@@ -180,9 +185,9 @@ public class GuiController implements Initializable {
         brickPanel.setLayoutX(gamePanel.getLayoutX() + brick.getxPosition() * brickPanel.getVgap() + brick.getxPosition() * BRICK_SIZE);
         brickPanel.setLayoutY(-42 + gamePanel.getLayoutY() + brick.getyPosition() * brickPanel.getHgap() + brick.getyPosition() * BRICK_SIZE);
 
-        /** If statement for isPause
-         *
-         * this if statement checks if the game is paused,
+        /**
+         * If statement for isPause
+         * this if statement checks is the game is paused,
          * if the game is not paused the timeline proceeds as normal, making the game run as usual
          *
          * if the game is paused, the timeline will be frozen and the pieces will not fall and be suspended in whatever current position they were in
@@ -293,7 +298,13 @@ public class GuiController implements Initializable {
         this.eventListener = eventListener;
     }
 
-    public void bindScore(IntegerProperty integerProperty) {
+    /**
+     * bindScore method has been refactored to correctly bind score to scoreboard UI
+     * @param scoreProperty
+     */
+
+    public void bindScore(IntegerProperty scoreProperty) {
+        ScoreBoardView.bind(scoreProperty);
     }
 
     // Game Over Screen
@@ -332,5 +343,4 @@ public class GuiController implements Initializable {
 
         gamePanel.requestFocus();
     }
-
 }

@@ -6,6 +6,12 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 
+/** This is a small UI overlay for when the game is paused
+ *
+ * This class creates a white "PAUSED" label in the center of the game board when the game is paused
+ *
+ */
+
 public class PausePanel extends BorderPane {
 
     public PausePanel() {
