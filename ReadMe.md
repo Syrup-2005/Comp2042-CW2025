@@ -68,11 +68,24 @@ https://github.com/Syrup-2005/Comp2042-CW2025
   Summary:
     When player presses P or Esc keys, game will be paused and a pause label will appear on screen, upon pressing the same keys the game will be resumed
 
+18th November 2025
 5. Scoreboard Implementation
   - To enable players to keep track of their current score counter while playing
 
   Changes:
+    In gameLayout.fxml added a node for showing scoreBoard
+    In GuiController.java intitalized scoreBoard to game
+    In SimpleBoard.java edited clearRows() to have different switch case point distribution for bonus points when clearing multiple rows
+    Created ScoreBoard.java to store all necessary methods and UI customisations related to scoreboard 
+    In GuiController.java bindScore(IntegerProperty scoreProperty) has been properly set to bind score to scoreboard using method bind() from ScoreBoard.java
 
+  Problems Encountered:
+    The logic for making the score bind properly to the scoreboard took a while to figure out
+    ScoreBoard title is not showing in the UI
+
+  Summary:
+    This enables players to keep track of how many points they have obtained while playing
+  
 
 ///////////Ideas that were implemented but not working || Ideas that were too complex to implement///////////
 1. Tweaks in MatrixOperations.java
@@ -88,3 +101,6 @@ https://github.com/Syrup-2005/Comp2042-CW2025
 3. Additional rotations in the matrix for z and x bricks
   - these were implemented but it wasnt working, the rotations visually does not look smooth and the collision does not match up with the well when it is merged
   - I wanted to give a more smooth transition for s and z brick when rotating clockwise or counter-clockwise in the well
+
+4. Scoreboard title not showing in the UI
+  - After rigorous testing, the title "SCORE" is just not showing in the UI
