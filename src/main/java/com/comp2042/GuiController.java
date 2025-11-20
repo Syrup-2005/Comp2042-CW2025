@@ -14,6 +14,7 @@ import javafx.scene.effect.Reflection;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
@@ -53,6 +54,14 @@ public class GuiController implements Initializable {
 
     private Timeline timeLine;
 
+    // Ghost Piece
+    private Rectangle[][] ghostRectangles;
+
+    @FXML
+    private Pane ghostPane;
+
+    private Board board;
+
     /**  private final BooleanProperty isPause = new SimpleBooleanProperty(false);
      *
      * Changed the default boolean to false for isPause
@@ -69,6 +78,11 @@ public class GuiController implements Initializable {
         Font.loadFont(getClass().getClassLoader().getResource("digital.ttf").toExternalForm(), 38);
         gamePanel.setFocusTraversable(true);
         gamePanel.requestFocus();
+
+        ghostPane.setLayoutX(gamePanel.getLayoutX());
+        ghostPane.setLayoutY(gamePanel.getLayoutY());
+        brickPanel.setLayoutX(gamePanel.getLayoutX());
+        brickPanel.setLayoutY(gamePanel.getLayoutY());
 
         /** To initialize the pausePanel after adding it to GameLayout.fxml
          *
@@ -185,6 +199,29 @@ public class GuiController implements Initializable {
         brickPanel.setLayoutX(gamePanel.getLayoutX() + brick.getxPosition() * brickPanel.getVgap() + brick.getxPosition() * BRICK_SIZE);
         brickPanel.setLayoutY(-42 + gamePanel.getLayoutY() + brick.getyPosition() * brickPanel.getHgap() + brick.getyPosition() * BRICK_SIZE);
 
+        /** this block of code is to indicate the preview of the falling piece in the well
+         * initialization of ghostRectangles
+         * creates a 2d array of rectangles that matches the size of the current brick
+         * each rectangle will represent one square of the ghost piece
+         *
+         * for each cell, creates a new rectangle of the same size as a regular tetris piece
+         * the color is set to be transparent and its opacity is set to 0.3
+         *
+         * it then stores the rectangle in the ghostRectangles array for easy access
+         * the ghost piece is also added to the brick panel so it is visible in the UI
+         */
+
+        ghostRectangles = new Rectangle[brick.getBrickData().length][brick.getBrickData()[0].length];
+        for (int i = 0; i < brick.getBrickData().length; i++) {
+            for (int j = 0; j < brick.getBrickData()[i].length; j++) {
+                Rectangle rect = new Rectangle(BRICK_SIZE, BRICK_SIZE);
+                rect.setFill(Color.GRAY);
+                rect.setOpacity(0.3);
+                ghostRectangles[i][j] = rect;
+                ghostPane.getChildren().add(rect);
+            }
+        }
+
         /**
          * If statement for isPause
          * this if statement checks is the game is paused,
@@ -247,17 +284,26 @@ public class GuiController implements Initializable {
         return returnPaint;
     }
 
+    /** refreshBrick()
+     * a line refreshGhost(brick) is added to ensure the ghost piece is updated upon creating a new piece in the board
+     * Optimized for one call per rectangle instead of calling it multiple times per rectangle
+     * @param brick
+     */
+
     // Handles visual updates
     private void refreshBrick(ViewData brick) {
-        if (isPause.getValue() == Boolean.FALSE) {
-            brickPanel.setLayoutX(gamePanel.getLayoutX() + brick.getxPosition() * brickPanel.getVgap() + brick.getxPosition() * BRICK_SIZE);
-            brickPanel.setLayoutY(-42 + gamePanel.getLayoutY() + brick.getyPosition() * brickPanel.getHgap() + brick.getyPosition() * BRICK_SIZE);
-            for (int i = 0; i < brick.getBrickData().length; i++) {
-                for (int j = 0; j < brick.getBrickData()[i].length; j++) {
-                    setRectangleData(brick.getBrickData()[i][j], rectangles[i][j]);
+            if (!isPause.get()) {
+                brickPanel.setLayoutX(gamePanel.getLayoutX() + brick.getxPosition() * BRICK_SIZE);
+                brickPanel.setLayoutY(gamePanel.getLayoutY() + brick.getyPosition() * BRICK_SIZE);
+
+                for (int i = 0; i < brick.getBrickData().length; i++) {
+                    for (int j = 0; j < brick.getBrickData()[i].length; j++) {
+                        setRectangleData(brick.getBrickData()[i][j], rectangles[i][j]);
+                    }
                 }
+                // update ghost piece once per frame
+                refreshGhost(brick);
             }
-        }
     }
 
     // Updates the colors of the fixed bricks when lines are cleared
@@ -342,5 +388,56 @@ public class GuiController implements Initializable {
         pausePanel.setVisible(paused);
 
         gamePanel.requestFocus();
+    }
+
+    /**
+     * This constructor method is used to enable methods from board.java
+     * @param board
+     */
+
+    public void setBoard(Board board) {
+        this.board = board;
+    }
+
+    /** This method is used to refresh the ghost piece everytime a new brick is created
+     * it starts by copying the current piece's position
+     * the ghost piece then moves down until it collides with something in the board
+     *
+     * the process loops through each block of the piece's shape
+     * if the value is 1 there's a block in that position
+     * if the value is 0 it is empty
+     * the color is set to be gray and the color is transparent
+     * finally the rectangle is positioned in the correct location on the screen based on the coordinates
+     *
+     * @param brick
+     */
+
+    private void refreshGhost(ViewData brick) {
+        int ghostX = brick.getxPosition();
+        int ghostY = brick.getyPosition();
+
+        // Drop ghost down until collision
+        while (!MatrixOperations.intersect(board.getBoardMatrix(), brick.getBrickData(), ghostX, ghostY + 1)) {
+            ghostY++;
+        }
+        ghostY -= 2;
+        ghostX--;
+
+        // Place ghost rectangles
+        for (int i = 0; i < brick.getBrickData().length; i++) {
+            for (int j = 0; j < brick.getBrickData()[i].length; j++) {
+                if (brick.getBrickData()[i][j] != 0) {
+                    ghostRectangles[i][j].setFill(Color.GRAY);
+                    ghostRectangles[i][j].setArcHeight(9);
+                    ghostRectangles[i][j].setArcWidth(9);
+
+                    // Snap to grid using only BRICK_SIZE
+                    ghostRectangles[i][j].setLayoutX((ghostX + j) * BRICK_SIZE);
+                    ghostRectangles[i][j].setLayoutY((ghostY + i) * BRICK_SIZE);
+                } else {
+                    ghostRectangles[i][j].setFill(Color.TRANSPARENT);
+                }
+            }
+        }
     }
 }

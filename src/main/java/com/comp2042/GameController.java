@@ -13,6 +13,8 @@ public class GameController implements InputEventListener {
         viewGuiController.setEventListener(this);
         viewGuiController.initGameView(board.getBoardMatrix(), board.getViewData());
         viewGuiController.bindScore(board.getScore().scoreProperty());
+        // Used for board constructor in GuiController.java
+        viewGuiController.setBoard(board);
     }
 
     // When down key is pressed
@@ -29,14 +31,13 @@ public class GameController implements InputEventListener {
             if (board.createNewBrick()) {
                 viewGuiController.gameOver();
             }
-
             viewGuiController.refreshGameBackground(board.getBoardMatrix());
-
         } else {
             if (event.getEventSource() == EventSource.USER) {
                 board.getScore().add(1);
             }
         }
+
         return new DownData(clearRow, board.getViewData());
     }
 
@@ -120,7 +121,7 @@ public class GameController implements InputEventListener {
 
         } else {
             if (event.getEventSource() == EventSource.USER) {
-                board.getScore().add(1);
+                board.getScore().add(150);
             }
         }
 
@@ -132,10 +133,5 @@ public class GameController implements InputEventListener {
     public void createNewGame() {
         board.newGame();
         viewGuiController.refreshGameBackground(board.getBoardMatrix());
-    }
-
-    public void updateScoreBoard() {
-        Score score = board.getScore();
-
     }
 }
