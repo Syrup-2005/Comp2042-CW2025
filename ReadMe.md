@@ -4,6 +4,9 @@ Shawn Chan - 20590530
 Github Link:
 https://github.com/Syrup-2005/Comp2042-CW2025
 
+Compilation:
+
+
 ///////////Phase 1 - Optimisation///////////
 
 11th November 2025
@@ -77,7 +80,9 @@ https://github.com/Syrup-2005/Comp2042-CW2025
     - In GuiController.java intitalized scoreBoard to game
     - In SimpleBoard.java edited clearRows() to have different switch case point distribution for bonus points when clearing multiple rows
     - Created ScoreBoard.java to store all necessary methods and UI customisations related to scoreboard 
+    - In ScoreBoard.java added fixed '...' appearing on the scoreboard due to width of VBox being too small
     - In GuiController.java bindScore(IntegerProperty scoreProperty) has been properly set to bind score to scoreboard using method bind() from ScoreBoard.java
+    - Added CSS for scoreboard(unused)
 
   * Problems Encountered:
     - The logic for making the score bind properly to the scoreboard took a while to figure out
@@ -101,6 +106,12 @@ https://github.com/Syrup-2005/Comp2042-CW2025
     - Couldnt get the ghost piece to perfectly allign with the pieces in the well
     - Upon merging the piece will have visual bugs before correctly snapping into the correct position in the board
 
+  * Summary:
+    - Ghost piece is implemented to let players where the pieces will land but the alignment of the ghost piece is not working correctly 
+
+24th Novemeber 2025
+7. 
+
 ///////////Ideas that were implemented but not working || Ideas that were too complex to implement///////////
 1. Tweaks in MatrixOperations.java
   - The format for intersect() and merge() uses i and j to indicate y and x, making the index, format and structure of code expectation a little complex
@@ -116,4 +127,40 @@ https://github.com/Syrup-2005/Comp2042-CW2025
   - these were implemented but it wasnt working, the rotations visually does not look smooth and the collision does not match up with the well when it is merged
   - I wanted to give a more smooth transition for s and z brick when rotating clockwise or counter-clockwise in the well
 
-4. 
+4. Score Label implemented but not working correctly
+
+21st November 2025
+5. Refactoring SimpleBoard.java into smaller files (Failed)
+    - This was done to fulfill SOLID Principles as SimpleBoard handles too many different responsibilities
+
+    * Changes:
+      - Extracted all matrix operation methods in SimpleBoard.java into BoardState.java
+      - Extracted all movement methods in SimpleBoard.java into MovementSystem.java 
+      - In MovementSystem.java created new move() method to reduce code duplication of moveBrickDown(), moveBrickLeft() and moveBrickRight();
+      - Extracted all Rotation methods in SimpleBoard.java into RotationSystem.java
+      - Extracted all brick spawning methods in SimpleBoard.java into BrickSpawner.java
+      - Extracted clearRows method in SimpleBoard.java into ScoreCalculator.java
+      - In BoardState.java added a new method getViewData() 
+      - In RotationSystem.java removed rotateleftBrick() as I've already implemented clockwise and counterclockwise rotation (for memory efficiency)
+      - Refactored SimpleBoard.java to a coordinator or a hub that connects all the systems
+      - In Board.java removed rotateLeftBrick()
+      - In GuiController.java removed input for up arrow key and w key
+      - In GameController.java removed all logic related to rotateLeftBrick()
+      - In InputEventListener.java removed onRotateEvent()
+      - In Brick.java added option to compute width and height of brick
+      - In GuiController.java corrected refreshghost() logic to match new refactored SimpleBoard.java
+      - In GuiController.java corrected initGameView() logic to match corrected offset position for bricks
+      - In Main.java added line c.setBoardState(boardState) to intialize it after FXML loads
+      - In BrickRotator.java added a constructor BrickRotator() and spawnNewBrick() method 
+      - In GuiController.java updated refreshBrick() method to update UI (?)
+      - Updated BrickRotator.java to fix Offset mismatch
+      - In MatrixOperations.java updated intersect() logic
+
+    * Problems Encountered:
+      - Collision broke immediately after refactoring
+      - Some links had to be properly verified before they started working correctly
+      - While moving and refactoring the blocks of code the offset position got really messy to determine what is out-of-bound or not
+      - After refactoring the UI wasnt updating visually
+    
+    * Summary:
+      - The logic for why it triggers an instant gameOver is unknown, the idea is completely scrapped and moved on to other features
