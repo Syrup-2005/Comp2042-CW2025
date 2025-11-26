@@ -46,6 +46,9 @@ public class GuiController implements Initializable {
     @FXML
     private ScoreBoard ScoreBoardView;
 
+    @FXML
+    private NextPieceBoard nextPieceBoard;
+
     private Rectangle[][] displayMatrix;
 
     private InputEventListener eventListener;
@@ -72,8 +75,14 @@ public class GuiController implements Initializable {
 
     private final BooleanProperty isGameOver = new SimpleBooleanProperty();
 
-    private void updateTimeline(int score) {
+    /** updateNextPiece()
+     * gets the next brick data from the unused method getNextBrickData() in ViewData class
+     *
+     * @param currentBrick
+     */
 
+    public void updateNextPiece(ViewData currentBrick) {
+        nextPieceBoard.updateNextPiece(currentBrick.getNextBrickData());
     }
 
     // Initialization
@@ -226,6 +235,8 @@ public class GuiController implements Initializable {
             }
         }
 
+        updateNextPiece(brick);
+
         /**
          * If statement for isPause
          * this if statement checks is the game is paused,
@@ -291,6 +302,8 @@ public class GuiController implements Initializable {
     /** refreshBrick()
      * a line refreshGhost(brick) is added to ensure the ghost piece is updated upon creating a new piece in the board
      * Optimized for one call per rectangle instead of calling it multiple times per rectangle
+     *
+     * a line refreshGhost(brick) is added to ensure the next piece preview is updated every time the new piece is refreshed
      * @param brick
      */
 
@@ -307,6 +320,8 @@ public class GuiController implements Initializable {
                 }
                 // update ghost piece once per frame
                 refreshGhost(brick);
+
+                updateNextPiece(brick);
             }
     }
 
@@ -355,10 +370,6 @@ public class GuiController implements Initializable {
 
     public void bindScore(IntegerProperty scoreProperty) {
         ScoreBoardView.bind(scoreProperty);
-
-        scoreProperty.addListener((obs, oldScore, newScore) -> {
-            updateTimelineSpeed(newScore.intValue());
-        });
     }
 
     // Game Over Screen
@@ -448,28 +459,4 @@ public class GuiController implements Initializable {
             }
         }
     }
-
-    private void updateTimelineSpeed(int score) {
-        // Base speed in milliseconds
-        int baseSpeed = 400;
-
-        // Increase speed by reducing the delay every 1000 points
-        int speed = Math.max(80, baseSpeed - (score / 1000) * 40);
-
-        if (timeLine != null) {
-            timeLine.stop();
-            timeLine.getKeyFrames().clear();
-
-            timeLine.getKeyFrames().add(new KeyFrame(Duration.millis(speed),
-                    ae -> {
-                        if (!isPause.get()) {
-                            moveDown(new MoveEvent(EventType.DOWN, EventSource.THREAD));
-                        }
-                    }));
-
-            timeLine.setCycleCount(Timeline.INDEFINITE);
-            timeLine.play();
-        }
-    }
-
 }

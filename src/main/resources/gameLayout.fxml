@@ -8,6 +8,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Text?>
 <?import java.net.URL?>
+<?import com.comp2042.NextPieceBoard?>
 <Pane fx:controller="com.comp2042.GuiController"
       xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml">
@@ -30,6 +31,7 @@
     <BorderPane layoutX="340" layoutY="20" styleClass="scoreBoard">
         <VBox alignment="CENTER_RIGHT">
             <ScoreBoard fx:id="ScoreBoardView"/>
+            <NextPieceBoard fx:id="nextPieceBoard" />
         </VBox>
     </BorderPane>
 
