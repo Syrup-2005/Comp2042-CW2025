@@ -72,6 +72,10 @@ public class GuiController implements Initializable {
 
     private final BooleanProperty isGameOver = new SimpleBooleanProperty();
 
+    private void updateTimeline(int score) {
+
+    }
+
     // Initialization
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -351,6 +355,10 @@ public class GuiController implements Initializable {
 
     public void bindScore(IntegerProperty scoreProperty) {
         ScoreBoardView.bind(scoreProperty);
+
+        scoreProperty.addListener((obs, oldScore, newScore) -> {
+            updateTimelineSpeed(newScore.intValue());
+        });
     }
 
     // Game Over Screen
@@ -440,4 +448,28 @@ public class GuiController implements Initializable {
             }
         }
     }
+
+    private void updateTimelineSpeed(int score) {
+        // Base speed in milliseconds
+        int baseSpeed = 400;
+
+        // Increase speed by reducing the delay every 1000 points
+        int speed = Math.max(80, baseSpeed - (score / 1000) * 40);
+
+        if (timeLine != null) {
+            timeLine.stop();
+            timeLine.getKeyFrames().clear();
+
+            timeLine.getKeyFrames().add(new KeyFrame(Duration.millis(speed),
+                    ae -> {
+                        if (!isPause.get()) {
+                            moveDown(new MoveEvent(EventType.DOWN, EventSource.THREAD));
+                        }
+                    }));
+
+            timeLine.setCycleCount(Timeline.INDEFINITE);
+            timeLine.play();
+        }
+    }
+
 }
