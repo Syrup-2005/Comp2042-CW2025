@@ -109,8 +109,33 @@ Compilation:
   * Summary:
     - Ghost piece is implemented to let players where the pieces will land but the alignment of the ghost piece is not working correctly 
 
-24th Novemeber 2025
-7. 
+27th Novemeber 2025
+7. Increasing Timeline Speed as Game goes on
+  - This makes it more difficult and challenging for players, to make more decisions as the pieces fall faster and starts to fill the board faster
+  
+  * Changes:
+    - In GuiController.java Created new class TimelineUpdater.java to hold responsibilities of updating timeline every 1000 points gained
+    - In GuiController.java updated bindScore() method with a listener
+
+  * Summary:
+    - the game speeds up exponentially to force a faster playstle and risk ending the game faster
+
+8.  Next Piece Board implementation
+    - This allows players to get a heads up for the next coming piece
+
+    * Changes:
+      - Created new class NextPieceBoard
+      - In guiController.java added new method updateNextPiece()
+      - In guicontroller.java added updateNextPiece(brick); inside refreshBrick() method
+
+    * Summary:
+      - This gives players more information and time to react and plan where the next piece goes in the well
+
+9. Holding a piece for later use / Hold feature implementation
+  - This allows for players to hold certain pieces they would want to use later on for a specific scenario
+
+  * Changes:
+    - 
 
 ///////////Ideas that were implemented but not working || Ideas that were too complex to implement///////////
 1. Tweaks in MatrixOperations.java
@@ -129,9 +154,10 @@ Compilation:
 
 4. Score Label implemented but not working correctly
 
-21st November 2025
-5. Refactoring SimpleBoard.java into smaller files (Failed)
+21th Novemeber - 27th Novemeber
+5. Refactoring SimpleBoard.java into smaller files (failed)
     - This was done to fulfill SOLID Principles as SimpleBoard handles too many different responsibilities
+    - I shouldve been able to refactor this file but I took too much time and it kept getting more and more complex as I linked the files
 
     * Changes:
       - Extracted all matrix operation methods in SimpleBoard.java into BoardState.java
@@ -154,13 +180,14 @@ Compilation:
       - In BrickRotator.java added a constructor BrickRotator() and spawnNewBrick() method 
       - In GuiController.java updated refreshBrick() method to update UI (?)
       - Updated BrickRotator.java to fix Offset mismatch
-      - In MatrixOperations.java updated intersect() logic
+      - In MatrixOperations.java updated intersect() logic as [i][j] were placed incorrectly
+      - In MatrixOperations.java updated merge() logic as [i][j] were placed incorrectly
 
     * Problems Encountered:
       - Collision broke immediately after refactoring
       - Some links had to be properly verified before they started working correctly
       - While moving and refactoring the blocks of code the offset position got really messy to determine what is out-of-bound or not
       - After refactoring the UI wasnt updating visually
-    
-    * Summary:
-      - The logic for why it triggers an instant gameOver is unknown, the idea is completely scrapped and moved on to other features
+  
+
+
