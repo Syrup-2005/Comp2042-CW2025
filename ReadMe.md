@@ -1,13 +1,39 @@
+-------------------------------------------------------------------------------------------------
+
 Tetris Overhaul
 Shawn Chan - 20590530
+
+-------------------------------------------------------------------------------------------------
 
 Github Link:
 https://github.com/Syrup-2005/Comp2042-CW2025
 
+-------------------------------------------------------------------------------------------------
+
 Compilation:
+1. Download all files from Overhaul-Version branch.
+2. Extract into desired location
+3. Compile and Run with Maven using javaFX
 
+-------------------------------------------------------------------------------------------------
 
-///////////Phase 1 - Optimisation///////////
+Keybinds:
+Z - Rotate falling piece counter-clockwise
+X - Rotate falling piece clockwise
+A/Left Arrow - Move brick Left
+S/Down Arrow - Move Brick Down
+D/Right Arrow - Move Brick Right
+Space Bar - Snap Piece to well instantly/Hard Drop
+N - New Game
+P/ESC - Pause Game
+
+-------------------------------------------------------------------------------------------------
+
+Gameplay Loop:
+Indefinite loop until player triggers a Game Over by not being able to place block in the board
+
+-------------------------------------------------------------------------------------------------
+Features and Changes Made:
 
 11th November 2025
 1. Changed the height in which the pieces/bricks spawn
@@ -90,6 +116,9 @@ Compilation:
 
   * Summary:
     - This enables players to keep track of how many points they have obtained while playing
+   
+  * Bugs:
+    - The Score Label is not working correctly due to the spacing being restricted
   
 20th November 2025
 6. Preview of the falling piece, where it will snap at the bottom of the well (Ghost Piece) (Imperfect)
@@ -107,7 +136,11 @@ Compilation:
     - Upon merging the piece will have visual bugs before correctly snapping into the correct position in the board
 
   * Summary:
-    - Ghost piece is implemented to let players where the pieces will land but the alignment of the ghost piece is not working correctly 
+    - Ghost piece is implemented to let players know where the pieces will land
+   
+  * Bugs:
+    - Allignment is not correctly linked to offset making visual cues a little misaligned with pieces in the well
+    - Collision for ghost piece isnt always correct due to logic in the method and intialization
 
 27th Novemeber 2025
 7. Increasing Timeline Speed as Game goes on
@@ -118,7 +151,8 @@ Compilation:
     - In GuiController.java updated bindScore() method with a listener
 
   * Summary:
-    - the game speeds up exponentially to force a faster playstle and risk ending the game faster
+    - the game speeds up exponentially to force players to adapt to a faster playstle or risk ending the game faster
+    - This ensures the infinite loop holds up while making sure gameplay does not go stale
 
 8.  Next Piece Board implementation
     - This allows players to get a heads up for the next coming piece
@@ -127,6 +161,7 @@ Compilation:
       - Created new class NextPieceBoard
       - In guiController.java added new method updateNextPiece()
       - In guicontroller.java added updateNextPiece(brick); inside refreshBrick() method
+      - In gameLayout.fxml added a node to show 4x4 grid below scoreboard for next piece preview
 
     * Summary:
       - This gives players more information and time to react and plan where the next piece goes in the well
@@ -135,12 +170,15 @@ Compilation:
   - This allows for players to hold certain pieces they would want to use later on for a specific scenario
 
   * Changes:
-    - 
+
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 ///////////Ideas that were implemented but not working || Ideas that were too complex to implement///////////
+
 1. Tweaks in MatrixOperations.java
   - The format for intersect() and merge() uses i and j to indicate y and x, making the index, format and structure of code expectation a little complex
-  - The idea to change and tweak it was scrapped as it messed up a lot of the links that were already in place
+  - The idea to change and update it was scrapped as it messed up a lot of the links that were already in place
   - Changing it made visual inputs dissapear entirely, pieces floating after merging to game matrix, collision of the bricks also got messed up
 
 2. Implementation of the Super Rotation System (SRS) and T-Spins
@@ -154,8 +192,10 @@ Compilation:
 
 4. Score Label implemented but not working correctly
 
+5. Ghost Piece has been implemented but the visual updates for collision and allignment are off due to offset of board
+
 21th Novemeber - 27th Novemeber
-5. Refactoring SimpleBoard.java into smaller files (failed)
+6. Refactoring SimpleBoard.java into smaller files (failed)
     - This was done to fulfill SOLID Principles as SimpleBoard handles too many different responsibilities
     - I shouldve been able to refactor this file but I took too much time and it kept getting more and more complex as I linked the files
 
@@ -188,6 +228,9 @@ Compilation:
       - Some links had to be properly verified before they started working correctly
       - While moving and refactoring the blocks of code the offset position got really messy to determine what is out-of-bound or not
       - After refactoring the UI wasnt updating visually
+      - Ghost piece wasnt alligned correctly
+      - MatrixOperations was not handling the collision check correctly after refactoring
   
+
 
 
