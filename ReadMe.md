@@ -12,8 +12,8 @@ https://github.com/Syrup-2005/Comp2042-CW2025
 
 Compilation:
 1. Download all files from Overhaul-Version branch.
-2. Extract into desired location
-3. Compile and Run with Maven using javaFX
+2. Extract and open the file into IntelliJ
+3. Compile and Run with Maven using javaFX as shown in Demo.MP4
 
 -------------------------------------------------------------------------------------------------
 
@@ -33,7 +33,8 @@ Gameplay Loop:
 Indefinite loop until player triggers a Game Over by not being able to place block in the board
 
 -------------------------------------------------------------------------------------------------
-Features and Changes Made:
+
+///////////Features and Changes Made///////////
 
 11th November 2025
 1. Changed the height in which the pieces/bricks spawn
@@ -92,7 +93,7 @@ Features and Changes Made:
     - In gameLayout.fxml added a node for PausePanel to show on game screen correctly
 
   * Problems Encountered:
-    - Adding and ensuring the Pause Screen Overlay works correctly in game
+    - Adding and ensuring the Pause Screen Overlay works correctly in game, the overlay wasn't appearing in the board in the correct position
 
   * Summary:
     - When player presses P or Esc keys, game will be paused and a pause label will appear on screen, upon pressing the same keys the game will be resumed
@@ -152,7 +153,8 @@ Features and Changes Made:
 
   * Summary:
     - the game speeds up exponentially to force players to adapt to a faster playstle or risk ending the game faster
-    - This ensures the infinite loop holds up while making sure gameplay does not go stale
+    - This ensures the infinite loop holds up while making sure gameplay can come to an end and introduce a challenge
+    - Every 1000 points the timeline speed increases
 
 8.  Next Piece Board implementation
     - This allows players to get a heads up for the next coming piece
@@ -166,16 +168,21 @@ Features and Changes Made:
     * Summary:
       - This gives players more information and time to react and plan where the next piece goes in the well
 
-9. Holding a piece for later use / Hold feature implementation
-  - This allows for players to hold certain pieces they would want to use later on for a specific scenario
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-  * Changes:
+///////////Ideas that were implemented but not working///////////
 
+1. Additional rotations in the matrix for z and x bricks
+  - these were implemented but it wasnt working, the rotations visually does not look smooth and the collision does not match up with the well when it is merged
+  - I wanted to give a more smooth transition for s and z brick when rotating clockwise or counter-clockwise in the well
+
+2. Score Label implemented but not working correctly
+
+3. Ghost Piece has been implemented but the visual updates for collision and allignment are off due to offset of board
 
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-///////////Ideas that were implemented but not working || Ideas that were too complex to implement///////////
-
+///////////Ideas that were too complex to implement///////////
 1. Tweaks in MatrixOperations.java
   - The format for intersect() and merge() uses i and j to indicate y and x, making the index, format and structure of code expectation a little complex
   - The idea to change and update it was scrapped as it messed up a lot of the links that were already in place
@@ -186,16 +193,8 @@ Features and Changes Made:
   - Personally I dont think i can implement this feature as it is far too complex with wallkicks and other features which make up the Super Rotation System
   - Adding to this reason, T-spinning is also a part of the SRS hence the idea was scrapped
 
-3. Additional rotations in the matrix for z and x bricks
-  - these were implemented but it wasnt working, the rotations visually does not look smooth and the collision does not match up with the well when it is merged
-  - I wanted to give a more smooth transition for s and z brick when rotating clockwise or counter-clockwise in the well
-
-4. Score Label implemented but not working correctly
-
-5. Ghost Piece has been implemented but the visual updates for collision and allignment are off due to offset of board
-
-21th Novemeber - 27th Novemeber
-6. Refactoring SimpleBoard.java into smaller files (failed)
+-- 21th Novemeber - 27th Novemeber --
+3. Refactoring SimpleBoard.java into smaller files (failed)
     - This was done to fulfill SOLID Principles as SimpleBoard handles too many different responsibilities
     - I shouldve been able to refactor this file but I took too much time and it kept getting more and more complex as I linked the files
 
@@ -230,7 +229,6 @@ Features and Changes Made:
       - After refactoring the UI wasnt updating visually
       - Ghost piece wasnt alligned correctly
       - MatrixOperations was not handling the collision check correctly after refactoring
-  
 
-
-
+4. Holding a piece for later use / Hold feature implementation (Time to Implement Crashed with Deadline)
+- This allows for players to hold certain pieces they would want to use later on for a specific scenario
