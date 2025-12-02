@@ -148,7 +148,7 @@ Indefinite loop until player triggers a Game Over by not being able to place blo
   - This makes it more difficult and challenging for players, to make more decisions as the pieces fall faster and starts to fill the board faster
   
   * Changes:
-    - In GuiController.java Created new class TimelineUpdater.java to hold responsibilities of updating timeline every 1000 points gained
+    - In GuiController.java Created new method UpdateTimelineSpeed() to hold responsibilities of updating timeline every 1000 points gained
     - In GuiController.java updated bindScore() method with a listener
 
   * Summary:
